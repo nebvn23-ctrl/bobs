@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>$BOBS | Being little bobs together</title>
+<meta name="description" content="The jolly dog cult we've been waiting on. Being little bobs together.">
+<meta name="theme-color" content="#12040f">
+<link rel="icon" type="image/png" href="assets/icon-32.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<meta property="og:title" content="$BOBS">
+<meta property="og:description" content="Being little bobs together.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300..600&display=swap">
+<style>
+:root{
+  --night:#12040f;
+  --plum:#2a0a26;
+  --rose:#ff4f93;
+  --rose-2:#ff8fb8;
+  --blush:#ffc9dd;
+  --cream:#fff3f7;
+  --cream-2:rgba(255,243,247,.76);
+  --cream-3:rgba(255,243,247,.5);
+  --line:rgba(255,201,221,.18);
+  --pad:clamp(20px,5vw,84px);
+  --rail:0px;
+  --serif:"Instrument Serif","Iowan Old Style",Georgia,serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --hud:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.2,.7,.1,1);
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--night:#12040f;--cream:#fff3f7}}
+:root[data-theme="dark"]{--night:#12040f;--cream:#fff3f7}
+@media (min-width:900px){:root{--rail:96px}}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+html,body{margin:0;overflow-x:clip}
+body{background:var(--night);color:var(--cream);font-family:var(--body);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body.is-locked{overflow:hidden}
+img{display:block;max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--rose-2);outline-offset:3px}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+
+/* ---------- Atmosphere: a real-time sky you climb through ---------- */
+.sky{position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,#2a0a26 0%,#6b1d4f 55%,#ff8fb0 100%)}
+.sky canvas{position:absolute;inset:0;width:100%;height:100%}
+.film{position:fixed;inset:0;z-index:70;pointer-events:none}
+.film__grain{position:absolute;inset:-50%;opacity:.09;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .9s steps(5) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-4%)}60%{transform:translate(-5%,-1%)}80%{transform:translate(4%,3%)}100%{transform:translate(0,0)}}
+.film__vig{position:absolute;inset:0;background:radial-gradient(130% 100% at 50% 45%,transparent 55%,rgba(8,0,6,.55))}
+.film__flick{position:absolute;inset:0;background:#fff;opacity:0;mix-blend-mode:overlay;animation:flick 7s steps(1) infinite}
+@keyframes flick{0%,100%{opacity:0}43%{opacity:.025}44%{opacity:0}71%{opacity:.02}72%{opacity:0}}
+main{position:relative;z-index:2}
+
+/* ---------- Flight instruments ---------- */
+.alt{position:fixed;left:0;top:0;bottom:0;width:var(--rail);z-index:40;display:none;pointer-events:none}
+@media (min-width:900px){.alt{display:block}}
+.alt__tape{position:absolute;left:34px;top:16vh;bottom:16vh;width:40px;
+  -webkit-mask:linear-gradient(180deg,transparent,#000 20%,#000 80%,transparent);mask:linear-gradient(180deg,transparent,#000 20%,#000 80%,transparent);
+  background:repeating-linear-gradient(180deg,rgba(255,243,247,.35) 0 1px,transparent 1px 10px) 0 var(--ro,0px)/8px 100% no-repeat,
+             repeating-linear-gradient(180deg,rgba(255,243,247,.8) 0 1px,transparent 1px 50px) 0 var(--ro,0px)/18px 100% no-repeat}
+.alt__box{position:absolute;left:22px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1px solid rgba(255,201,221,.35);background:rgba(18,4,15,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-family:var(--hud)}
+.alt__lab{font-size:9.5px;letter-spacing:.14em;color:var(--cream-3)}
+.alt__num{font-size:14px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--cream);min-width:6ch}
+.adi{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,201,221,.45);overflow:hidden;position:relative}
+.adi i{position:absolute;left:-30%;right:-30%;top:50%;height:100%;background:rgba(255,79,147,.35);border-top:1px solid var(--rose-2);transform:rotate(var(--roll,0deg)) translateY(var(--pitch,0px));transform-origin:50% 0}
+.adi::after{content:"";position:absolute;left:30%;right:30%;top:50%;height:1px;background:var(--cream)}
+.alt-m{position:fixed;left:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:center;gap:10px;padding:7px 12px 7px 8px;border:1px solid rgba(255,201,221,.3);background:rgba(18,4,15,.72);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-family:var(--hud);font-size:12px;font-variant-numeric:tabular-nums;pointer-events:none}
+.alt-m .adi{width:22px;height:22px}
+@media (min-width:900px){.alt-m{display:none}}
+
+/* ---------- Header ---------- */
+.bar{position:fixed;left:0;right:0;top:0;z-index:50;padding-top:env(safe-area-inset-top,0px);transition:transform .6s var(--ease)}
+.bar.is-hidden{transform:translateY(-110%)}
+.bar__in{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px var(--pad) 16px calc(var(--pad) + var(--rail) * .6)}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-family:var(--serif);font-size:24px;line-height:1}
+.brand img{width:34px;height:34px;border-radius:50%;box-shadow:0 0 0 1px rgba(255,201,221,.5)}
+.bar__acts{display:flex;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border:1px solid var(--line);background:rgba(18,4,15,.45);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;transition:background .3s,border-color .3s}
+.chip:hover{background:rgba(255,79,147,.16);border-color:rgba(255,79,147,.6)}
+.chip[hidden]{display:none}
+.xmark{width:15px;height:15px;flex:none}
+
+/* ---------- Buttons + CA ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:54px;padding:0 28px;font-weight:650;font-size:15px;letter-spacing:.01em;text-decoration:none;cursor:pointer;border:0;transition:background .35s,box-shadow .35s,color .35s}
+.btn--rose{background:var(--rose);color:#fff;box-shadow:0 16px 40px -18px rgba(255,79,147,.9)}
+.btn--rose:hover{background:#ff6aa4}
+.btn--line{background:rgba(18,4,15,.35);color:var(--cream);box-shadow:inset 0 0 0 1px rgba(255,201,221,.4)}
+.btn--line:hover{box-shadow:inset 0 0 0 1px var(--rose-2);background:rgba(255,79,147,.12)}
+.ca{display:flex;align-items:center;gap:14px;height:54px;padding:0 6px 0 18px;border:1px solid rgba(255,201,221,.3);background:rgba(18,4,15,.5);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);min-width:0;max-width:100%}
+.ca__tag{font-family:var(--hud);font-weight:600;font-size:13px;color:var(--rose-2);flex:none}
+.ca__val{font-family:var(--hud);font-size:13px;color:var(--cream-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.ca__copy{flex:none;height:42px;padding:0 18px;border:0;background:rgba(255,201,221,.12);color:var(--cream);font-weight:650;font-size:14px;cursor:pointer}
+.ca__copy:hover{background:rgba(255,201,221,.24)}
+.ca__copy:disabled{opacity:.45;cursor:default}
+.ca.is-empty .ca__val{color:var(--cream-3)}
+
+/* ---------- Intro: climb through the clouds ---------- */
+.gate{position:fixed;inset:0;z-index:100;pointer-events:auto}
+.gate.is-gone{pointer-events:none}
+.gate__black{position:absolute;inset:0;background:#000}
+.gate__bar{position:absolute;left:0;right:0;height:13vh;background:#000;z-index:2}
+.gate__bar--t{top:0}
+.gate__bar--b{bottom:0}
+.gate__hud{position:absolute;left:var(--pad);right:var(--pad);top:calc(13vh + 18px);z-index:3;display:flex;justify-content:space-between;font-family:var(--hud);font-size:12px;letter-spacing:.12em;color:rgba(255,243,247,.72);opacity:0}
+.gate__ladder{position:absolute;left:50%;top:50%;width:min(46vw,420px);height:200px;transform:translate(-50%,-50%);z-index:3;opacity:0}
+.gate__ladder svg{width:100%;height:100%;overflow:visible}
+.gate__card{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);z-index:4;text-align:center;padding:0 24px}
+.gate__q{margin:0;font-family:var(--serif);font-style:italic;font-size:clamp(34px,5.4vw,84px);line-height:1;letter-spacing:-.01em;opacity:0;text-shadow:0 2px 40px rgba(0,0,0,.35)}
+.gate__meta{margin:18px 0 0;font-family:var(--hud);font-size:12px;letter-spacing:.14em;color:rgba(255,243,247,.7);opacity:0}
+.gate__skip{position:absolute;right:var(--pad);bottom:calc(13vh + 14px);z-index:5;background:none;border:0;padding:8px;font-family:var(--hud);font-size:12px;letter-spacing:.1em;color:rgba(255,243,247,.6);cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+.gate__skip:hover{color:var(--cream)}
+
+/* ---------- Hero: full-bleed plate ---------- */
+.hero{position:relative;height:100svh;min-height:600px;overflow:hidden}
+.hero__plate{position:absolute;top:-3%;bottom:-3%;right:-2%;width:min(66vw,122svh);will-change:transform;-webkit-mask:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.6) 18%,#000 38%),linear-gradient(0deg,transparent 0%,#000 22%);-webkit-mask-composite:source-in;mask:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.6) 18%,#000 38%) intersect,linear-gradient(0deg,transparent 0%,#000 22%)}
+.hero__plate img{width:100%;height:100%;object-fit:cover;object-position:50% 40%}
+.hero__grade{position:absolute;inset:0;background:radial-gradient(70% 60% at 18% 88%,rgba(14,3,11,.75),transparent 70%),linear-gradient(0deg,rgba(14,3,11,.6),transparent 30%),linear-gradient(180deg,rgba(14,3,11,.45),transparent 16%)}
+.flare{position:absolute;left:var(--fx,66%);top:var(--fy,14%);width:0;height:0;pointer-events:none;mix-blend-mode:screen}
+.flare__streak{position:absolute;left:-60vw;width:120vw;top:-1px;height:2px;background:linear-gradient(90deg,transparent,rgba(255,120,180,.0) 10%,rgba(255,150,200,.55) 45%,rgba(255,255,255,.9) 50%,rgba(255,150,200,.55) 55%,transparent 90%);filter:blur(1px)}
+.flare__core{position:absolute;left:-120px;top:-120px;width:240px;height:240px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.55),rgba(255,140,190,.18) 40%,transparent)}
+.flare__ghost{position:absolute;border-radius:50%;border:1px solid rgba(255,180,210,.18);background:radial-gradient(closest-side,rgba(255,120,180,.08),transparent)}
+.hero__txt{position:absolute;left:calc(var(--pad) + var(--rail));right:var(--pad);bottom:calc(7svh + env(safe-area-inset-bottom,0px));z-index:3}
+.t3d{--rx:0deg;--ry:0deg;margin:0 0 0 -.03em;display:flex;perspective:1200px;font-family:var(--serif);font-weight:400;font-size:clamp(110px,min(19vw,34svh),330px);line-height:.8;letter-spacing:-.02em;user-select:none}
+.t3d__in{display:flex;transform-style:preserve-3d;transform:rotateX(var(--rx)) rotateY(var(--ry))}
+.t3d__l{position:relative;display:inline-block;transform-style:preserve-3d}
+.t3d__k{position:absolute;left:0;top:0;color:var(--k);transform:translateZ(calc(var(--i) * -.006em))}
+.t3d__f{position:relative;display:block;color:transparent;transform:translateZ(.002em);
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.85) 47%,transparent 60%) var(--shine,-200%) 0/55% 100% no-repeat,
+             linear-gradient(180deg,#ffffff 0%,#ffd9e8 28%,#c98aa6 50%,#fff3f7 64%,#ff9cc3 82%,#7a3a58 100%);
+  -webkit-background-clip:text;background-clip:text}
+.hero__tag{margin:18px 0 0;font-family:var(--serif);font-style:italic;font-size:clamp(26px,2.6vw,42px);line-height:1.05}
+.hero__row{margin-top:26px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.hero__sub{margin:0;max-width:34ch;font-size:clamp(15px,1.15vw,17px);color:var(--cream-2)}
+.hero__acts{display:flex;flex-wrap:wrap;gap:12px}
+.hero__acts .ca{width:min(420px,100%)}
+.hero__hud{position:absolute;right:var(--pad);top:calc(96px + env(safe-area-inset-top,0px));z-index:3;text-align:right;font-family:var(--hud);font-size:11.5px;letter-spacing:.12em;line-height:1.9;color:var(--cream-3)}
+.hero__hud b{font-weight:500;color:var(--cream-2)}
+
+/* ---------- Signal: title cards ---------- */
+.cards{position:relative;height:100svh;overflow:hidden}
+.cards__bars::before,.cards__bars::after{content:"";position:absolute;left:0;right:0;height:10vh;background:#000;z-index:2}
+.cards__bars::before{top:0}
+.cards__bars::after{bottom:0}
+.card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 var(--pad) 0 calc(var(--pad) + var(--rail));opacity:0}
+.card__big{margin:0;max-width:17ch;font-family:var(--serif);font-size:clamp(44px,6.6vw,112px);line-height:.98;letter-spacing:-.02em;text-shadow:0 4px 60px rgba(40,0,30,.35)}
+.card__big em{font-style:italic}
+.card__meta{margin:26px 0 0;font-family:var(--hud);font-size:12px;letter-spacing:.14em;color:var(--cream-2)}
+.card__link{display:inline-block;margin-top:22px;font-weight:650;color:var(--blush);text-underline-offset:5px}
+.cards__count{position:absolute;right:var(--pad);bottom:calc(10vh + 18px);z-index:3;font-family:var(--hud);font-size:12px;letter-spacing:.12em;color:var(--cream-3)}
+
+/* ---------- Flight log ---------- */
+.log{position:relative;padding:16vh var(--pad) 10vh calc(var(--pad) + var(--rail))}
+.log__head{max-width:900px;margin-bottom:12vh}
+.log__title{margin:0;font-family:var(--serif);font-size:clamp(48px,6.4vw,110px);line-height:.95;letter-spacing:-.02em}
+.log__sub{margin:18px 0 0;font-size:clamp(17px,1.4vw,20px);color:var(--cream-2)}
+.plate{position:relative;display:grid;grid-template-columns:repeat(12,1fr);align-items:center;gap:20px;margin:0 0 20vh}
+.plate__fig{position:relative;grid-column:1 / span 7;margin:0;aspect-ratio:var(--ar,16/10);overflow:hidden;background:#000}
+.plate__fig img{width:100%;height:100%;object-fit:cover;transform:scale(1.18);filter:contrast(1.06) saturate(.92);will-change:transform}
+.plate__fig::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),transparent 25%,transparent 70%,rgba(0,0,0,.45));pointer-events:none}
+.plate__tc{position:absolute;left:14px;bottom:12px;z-index:2;font-family:var(--hud);font-size:11px;letter-spacing:.12em;color:rgba(255,243,247,.8)}
+.plate__txt{grid-column:9 / span 4;position:relative;z-index:2}
+.plate:nth-child(even) .plate__fig{grid-column:6 / span 7;order:2}
+.plate:nth-child(even) .plate__txt{grid-column:1 / span 4;order:1}
+.plate__alt{font-family:var(--hud);font-size:13px;letter-spacing:.14em;font-variant-numeric:tabular-nums;color:var(--rose-2)}
+.plate__name{margin:12px 0 0;font-family:var(--serif);font-size:clamp(34px,3.2vw,54px);line-height:1;letter-spacing:-.015em}
+.plate__cap{margin:12px 0 0;color:var(--cream-2);max-width:30ch}
+.plate__ghost{position:absolute;right:-2vw;top:50%;transform:translateY(-50%);font-family:var(--serif);font-size:clamp(140px,24vw,420px);line-height:1;letter-spacing:-.03em;color:transparent;-webkit-text-stroke:1px rgba(255,201,221,.12);pointer-events:none;white-space:nowrap;z-index:0}
+.plate:nth-child(even) .plate__ghost{right:auto;left:-2vw}
+
+/* ---------- The order ---------- */
+.order{position:relative;height:100svh;overflow:hidden;background:#0c0508}
+.order__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;transform-origin:50% 22%}
+.order__glow{position:absolute;left:50%;top:20%;width:64vmin;height:64vmin;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,79,147,.5),rgba(255,79,147,.1) 55%,transparent);mix-blend-mode:screen;opacity:0;pointer-events:none}
+.order__shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(12,5,8,.95) 8%,rgba(12,5,8,.35) 55%,rgba(12,5,8,.2)),linear-gradient(90deg,rgba(12,5,8,.6),transparent 60%)}
+.order__txt{position:absolute;left:calc(var(--pad) + var(--rail));right:var(--pad);bottom:calc(10svh + env(safe-area-inset-bottom,0px));max-width:1000px}
+.order__line{margin:0;font-family:var(--serif);font-size:clamp(44px,6vw,104px);line-height:.96;letter-spacing:-.02em}
+.order__line .w{display:inline-block;white-space:pre}
+.order__sub{margin:22px 0 0;font-size:clamp(17px,1.4vw,20px);color:var(--cream-2);max-width:40ch}
+.order__acts{margin-top:28px;display:flex;flex-wrap:wrap;gap:12px}
+.order__acts .ca{width:min(440px,100%)}
+
+/* ---------- Template ---------- */
+.tpl{position:relative;padding:20vh var(--pad) 14vh calc(var(--pad) + var(--rail))}
+.tpl__in{display:grid;grid-template-columns:.9fr 1.1fr;gap:6vw;align-items:center}
+.tpl__title{margin:0;font-family:var(--serif);font-size:clamp(46px,5.6vw,96px);line-height:.95;letter-spacing:-.02em}
+.tpl__sub{margin:20px 0 0;max-width:36ch;font-size:clamp(17px,1.4vw,20px);color:var(--cream-2)}
+.tpl__grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2vw,26px)}
+.tcard{margin:0;display:flex;flex-direction:column;gap:12px}
+.tcard__img{position:relative;aspect-ratio:1;overflow:hidden;background:#000;box-shadow:0 30px 70px -30px rgba(0,0,0,.8)}
+.tcard__img img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+.tcard:hover .tcard__img img{transform:scale(1.05)}
+.tcard__cap{font-family:var(--hud);font-size:11px;letter-spacing:.12em;color:var(--cream-3)}
+.tcard .btn{height:48px;width:100%}
+
+/* ---------- Finale ---------- */
+.fin{position:relative;padding:16vh var(--pad) 0 calc(var(--pad) + var(--rail));text-align:center}
+.fin__banner{position:relative;max-width:1300px;margin:0 auto;aspect-ratio:3/1;overflow:hidden;box-shadow:0 0 0 1px rgba(255,79,147,.35),0 50px 140px -40px rgba(255,79,147,.6)}
+.fin__banner img{width:100%;height:100%;object-fit:cover}
+.fin__title{margin:9vh auto 0;max-width:16ch;font-family:var(--serif);font-size:clamp(48px,6.6vw,116px);line-height:.95;letter-spacing:-.02em}
+.fin__acts{margin:34px auto 0;display:flex;flex-wrap:wrap;justify-content:center;gap:12px;max-width:760px}
+.fin__acts .ca{width:min(440px,100%)}
+.foot{margin-top:16vh;padding:26px 0 calc(28px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px 32px;text-align:left;font-size:14px;color:var(--cream-3)}
+.foot p{margin:0;max-width:62ch}
+.foot__links{display:flex;gap:18px}
+.foot a{color:var(--cream-2);font-weight:650;text-underline-offset:4px}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:95;transform:translate(-50%,20px);padding:12px 18px;background:var(--cream);color:var(--night);font-weight:650;font-size:15px;opacity:0;pointer-events:none;transition:opacity .3s,transform .4s var(--ease)}
+.toast.is-on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- Responsive ---------- */
+@media (max-width:900px){
+  .hero__plate{top:0;bottom:auto;right:0;left:0;width:auto;height:74svh;-webkit-mask:linear-gradient(180deg,#000 55%,transparent);mask:linear-gradient(180deg,#000 55%,transparent)}
+  .hero__plate img{object-position:50% 30%}
+  .hero__grade{background:linear-gradient(0deg,rgba(14,3,11,.9) 0%,rgba(14,3,11,.5) 34%,rgba(14,3,11,0) 55%),linear-gradient(180deg,rgba(14,3,11,.5),transparent 16%)}
+  .t3d{font-size:clamp(96px,30vw,220px)}
+  .hero__hud{display:none}
+  .hero__acts,.hero__acts .ca{width:100%}
+  .plate{grid-template-columns:1fr;gap:22px}
+  .plate__fig,.plate:nth-child(even) .plate__fig{grid-column:1;order:1}
+  .plate__txt,.plate:nth-child(even) .plate__txt{grid-column:1;order:2}
+  .plate__ghost{font-size:36vw;top:30%}
+  .tpl__in{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .brand span{display:none}
+  .chip--ca{display:none!important}
+  .tcard .btn{font-size:14px;padding:0 10px}
+  .foot{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  .gate__bar{height:9vh}
+  .gate__hud{top:calc(9vh + 14px);font-size:10.5px}
+  .gate__skip{bottom:calc(9vh + 10px)}
+}
+@media (prefers-reduced-motion:reduce){
+  .film__grain,.film__flick{animation:none}
+}
+</style>
+</head>
+<body class="is-locked">
+
+<div class="sky" aria-hidden="true"><canvas id="sky"></canvas></div>
+<div class="film" aria-hidden="true"><div class="film__grain"></div><div class="film__vig"></div><div class="film__flick"></div></div>
+
+<!-- Intro: the camera climbs through the clouds -->
+<div class="gate" id="gate" role="dialog" aria-label="Intro">
+  <div class="gate__black" id="gateBlack"></div>
+  <div class="gate__bar gate__bar--t" id="barT"></div>
+  <div class="gate__bar gate__bar--b" id="barB"></div>
+  <div class="gate__hud" id="gateHud"><span>BOBS / FLIGHT 001</span><span id="tc">00:00:00:00</span></div>
+  <div class="gate__ladder" id="ladder" aria-hidden="true">
+    <svg viewBox="-210 -100 420 200"><g id="ladderG" stroke="rgba(255,243,247,.55)" stroke-width="1" fill="none">
+      <line x1="-210" y1="0" x2="-40" y2="0"/><line x1="40" y1="0" x2="210" y2="0"/>
+      <line x1="-80" y1="-50" x2="-30" y2="-50"/><line x1="30" y1="-50" x2="80" y2="-50"/>
+      <line x1="-80" y1="50" x2="-30" y2="50" stroke-dasharray="6 5"/><line x1="30" y1="50" x2="80" y2="50" stroke-dasharray="6 5"/>
+      <path d="M-14 0 L0 8 L14 0" stroke="#ff8fb8" stroke-width="1.5"/>
+    </g></svg>
+  </div>
+  <div class="gate__card">
+    <p class="gate__q" id="gateQ">being little bobs together</p>
+    <p class="gate__meta" id="gateMeta">500,000 VIEWS IN 20 HOURS</p>
+  </div>
+  <button class="gate__skip" id="skip">Skip intro</button>
+</div>
+
+<!-- Instruments -->
+<div class="alt" aria-hidden="true">
+  <div class="alt__tape" id="altTape"></div>
+  <div class="alt__box">
+    <div class="adi"><i></i></div>
+    <span class="alt__lab">ALT FT</span>
+    <span class="alt__num" data-alt>0</span>
+  </div>
+</div>
+<div class="alt-m" aria-hidden="true"><div class="adi"><i></i></div><span data-alt>0</span><span data-alt-unit>ft</span></div>
+
+<header class="bar" id="bar">
+  <div class="bar__in">
+    <a class="brand" href="#top" aria-label="Bobs, back to top"><img src="assets/icon-180.png" alt=""><span data-ticker>$BOBS</span></a>
+    <div class="bar__acts">
+      <button class="chip chip--ca" id="barCa" hidden>Copy CA</button>
+      <a class="chip" data-x target="_blank" rel="noopener"><svg class="xmark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Follow</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero" id="hero" aria-label="Bobs">
+    <div class="hero__plate" id="plate"><img src="assets/hero.webp" alt="Two puppies in propeller hats cheek to cheek, one holding a green pill, the other a rainbow lollipop, under a pink sunset"></div>
+    <div class="hero__grade"></div>
+    <div class="flare" id="flare" aria-hidden="true">
+      <div class="flare__streak"></div><div class="flare__core"></div>
+      <div class="flare__ghost" style="left:12vw;top:18vh;width:70px;height:70px"></div>
+      <div class="flare__ghost" style="left:22vw;top:32vh;width:140px;height:140px"></div>
+      <div class="flare__ghost" style="left:-14vw;top:-8vh;width:40px;height:40px"></div>
+    </div>
+    <div class="hero__hud" aria-hidden="true"><div>SCENE <b>01</b></div><div>ALT <b>0 FT</b></div><div>HDG <b>000</b></div></div>
+    <div class="hero__txt">
+      <h1 class="t3d" id="title" aria-label="Bobs">Bobs</h1>
+      <p class="hero__tag">being little bobs together</p>
+      <div class="hero__row">
+        <p class="hero__sub">The jolly dog going viral on X right now. You see it, and you instantly get it.</p>
+      </div>
+      <div class="hero__row">
+        <div class="hero__acts">
+          <div class="ca" data-ca>
+            <span class="ca__tag" data-ticker>$BOBS</span>
+            <span class="ca__val" data-ca-val></span>
+            <button class="ca__copy" data-ca-copy>Copy</button>
+          </div>
+          <a class="btn btn--rose" data-x target="_blank" rel="noopener"><svg class="xmark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Follow on X</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cards" id="cards" aria-label="Why it works">
+    <div class="cards__bars" aria-hidden="true"></div>
+    <div class="card" data-card>
+      <h2 class="card__big">Over 500,000 views in the first 20 hours.</h2>
+      <p class="card__meta">ONE POST. TWO DOGS. ONE CAPTION.</p>
+      <a class="card__link" data-post target="_blank" rel="noopener">See the post on X</a>
+    </div>
+    <div class="card" data-card><h2 class="card__big">Simple memes have the <em>highest ceilings.</em></h2></div>
+    <div class="card" data-card><h2 class="card__big">You see the coin and instantly know the story.</h2></div>
+    <div class="card" data-card><h2 class="card__big">It puts a smile on your face. <em>Everyone</em> can get behind that.</h2></div>
+    <div class="cards__count" id="cardsCount" aria-hidden="true">1 / 4</div>
+  </section>
+
+  <section class="log" id="log" aria-label="Flight log">
+    <div class="log__head">
+      <h2 class="log__title">Flight log</h2>
+      <p class="log__sub">From the trenches to the top, always together.</p>
+    </div>
+    <div id="plates">
+      <article class="plate" data-shape="iris" style="--ar:16/9">
+        <div class="plate__ghost" aria-hidden="true">0</div>
+        <figure class="plate__fig"><img src="assets/trench.webp" alt="The two Bobs in raincoats in a muddy trench, one reading a chart on a laptop, the other on a field radio"><span class="plate__tc">REEL 1  00:00:14</span></figure>
+        <div class="plate__txt"><div class="plate__alt">ALT 0 FT</div><h3 class="plate__name">The trenches</h3><p class="plate__cap">Charts by lantern light, radio on. Every climb starts at the bottom.</p></div>
+      </article>
+      <article class="plate" data-shape="scope" style="--ar:16/9">
+        <div class="plate__ghost" aria-hidden="true">1,500</div>
+        <figure class="plate__fig"><img src="assets/warehouse.webp" alt="The two Bobs in trench coats walking away from a burning warehouse with a briefcase"><span class="plate__tc">REEL 2  00:03:41</span></figure>
+        <div class="plate__txt"><div class="plate__alt">ALT 1,500 FT</div><h3 class="plate__name">The docks</h3><p class="plate__cap">They didn't look back.</p></div>
+      </article>
+      <article class="plate" data-shape="shutter" style="--ar:3/2">
+        <div class="plate__ghost" aria-hidden="true">6,000</div>
+        <figure class="plate__fig"><img src="assets/parking.webp" alt="The two Bobs in black jackets beside a black car in an underground garage, one holding a duffel bag"><span class="plate__tc">REEL 3  00:07:02</span></figure>
+        <div class="plate__txt"><div class="plate__alt">ALT 6,000 FT</div><h3 class="plate__name">Level B2</h3><p class="plate__cap">Bag secured. Engine running.</p></div>
+      </article>
+      <article class="plate" data-shape="iris" style="--ar:1/1">
+        <div class="plate__ghost" aria-hidden="true">12,000</div>
+        <figure class="plate__fig"><img src="assets/armory.webp" alt="The two Bobs in tactical jackets at a counter with a cash stack and hard cases"><span class="plate__tc">REEL 4  00:11:36</span></figure>
+        <div class="plate__txt"><div class="plate__alt">ALT 12,000 FT</div><h3 class="plate__name">Equipment check</h3><p class="plate__cap">Nobody climbs this high unprepared.</p></div>
+      </article>
+      <article class="plate" data-shape="scope" style="--ar:4/5">
+        <div class="plate__ghost" aria-hidden="true">24,000</div>
+        <figure class="plate__fig"><img src="assets/vault.webp" alt="The two Bobs in suits and ties inside an open bank vault with a briefcase of cash"><span class="plate__tc">REEL 5  00:16:20</span></figure>
+        <div class="plate__txt"><div class="plate__alt">ALT 24,000 FT</div><h3 class="plate__name">The vault</h3><p class="plate__cap">Suits on. Door open.</p></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="order" id="order" aria-label="The order">
+    <img class="order__img" id="orderImg" src="assets/order.webp" alt="The two Bobs in black robes before an altar with a book and candles, hooded figures behind them and a glowing symbol above">
+    <div class="order__glow" id="orderGlow"></div>
+    <div class="order__shade"></div>
+    <div class="order__txt">
+      <h2 class="order__line" id="orderLine">This might be the jolly dog cult we've been waiting on.</h2>
+      <p class="order__sub" id="orderSub">36,000 ft. Membership is simple: put on the hat.</p>
+      <div class="order__acts" id="orderActs">
+        <div class="ca" data-ca>
+          <span class="ca__tag" data-ticker>$BOBS</span>
+          <span class="ca__val" data-ca-val></span>
+          <button class="ca__copy" data-ca-copy>Copy</button>
+        </div>
+        <a class="btn btn--rose" data-x target="_blank" rel="noopener"><svg class="xmark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Join on X</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="tpl" id="template" aria-label="Free meme template">
+    <div class="tpl__in">
+      <div>
+        <h2 class="tpl__title">Free meme template</h2>
+        <p class="tpl__sub">Take the original, make your own Bobs, and post it. That's how this spreads.</p>
+      </div>
+      <div class="tpl__grid">
+        <figure class="tcard">
+          <div class="tcard__img"><img src="assets/hero.webp" alt="Pink Bobs template" loading="lazy"></div>
+          <span class="tcard__cap">DUSK / 1254 × 1254</span>
+          <a class="btn btn--rose" href="assets/bobs-template-pink.jpg" download="bobs-template-pink.jpg" data-dl="bobs-template-pink.jpg">Download pink</a>
+        </figure>
+        <figure class="tcard">
+          <div class="tcard__img"><img src="assets/original.webp" alt="Original green Bobs template" loading="lazy"></div>
+          <span class="tcard__cap">ORIGINAL / 1024 × 1024</span>
+          <a class="btn btn--line" href="assets/bobs-template-original.jpg" download="bobs-template-original.jpg" data-dl="bobs-template-original.jpg">Download original</a>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="fin" id="fin" aria-label="Orbit">
+    <div class="fin__banner" id="finBanner"><img src="assets/banner.webp" alt="Bobs logo in glowing pink letters behind the two puppies, with pills floating around"></div>
+    <h2 class="fin__title">Above the clouds, <em>together.</em></h2>
+    <div class="fin__acts">
+      <div class="ca" data-ca>
+        <span class="ca__tag" data-ticker>$BOBS</span>
+        <span class="ca__val" data-ca-val></span>
+        <button class="ca__copy" data-ca-copy>Copy</button>
+      </div>
+      <a class="btn btn--rose" data-x target="_blank" rel="noopener"><svg class="xmark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Follow on X</a>
+    </div>
+    <footer class="foot">
+      <p>© 2026 $BOBS. A meme coin with no intrinsic value or expectation of financial return. Nothing here is financial advice.</p>
+      <div class="foot__links"><a data-x target="_blank" rel="noopener">X</a><a href="#top" id="toTop">Back to the ground</a></div>
+    </footer>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+/* =========================================================
+   CONFIG — schimbă aici:
+   ca:     adresa contractului (lasă "" până la lansare)
+   x:      linkul contului tău de X
+   ticker: tickerul
+   post:   postarea virală de pe X
+   ========================================================= */
+const CONFIG = {
+  ca: "",
+  x: "https://x.com/",
+  ticker: "$BOBS",
+  post: "https://x.com/tortadefrango67/status/2104603319117242692"
+};
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const coarse = matchMedia('(pointer: coarse)').matches;
+const hasGSAP = !!(window.gsap && window.ScrollTrigger);
+if (hasGSAP) gsap.registerPlugin(ScrollTrigger);
+
+/* ---------- Config wiring ---------- */
+$$('[data-x]').forEach(a => a.href = CONFIG.x);
+$$('[data-post]').forEach(a => a.href = CONFIG.post);
+$$('[data-ticker]').forEach(e => e.textContent = CONFIG.ticker);
+$$('[data-ca]').forEach(box => {
+  const v = $('[data-ca-val]', box), b = $('[data-ca-copy]', box);
+  if (CONFIG.ca){ v.textContent = CONFIG.ca; v.title = CONFIG.ca; b.addEventListener('click', copyCA); }
+  else { box.classList.add('is-empty'); v.textContent = 'Contract address drops at launch'; b.disabled = true; }
+});
+if (CONFIG.ca){ const bc = $('#barCa'); bc.hidden = false; bc.addEventListener('click', copyCA); }
+const toast = $('#toast'); let toastT;
+function say(msg){ toast.textContent = msg; toast.classList.add('is-on'); clearTimeout(toastT); toastT = setTimeout(() => toast.classList.remove('is-on'), 2200); }
+async function copyCA(){
+  let ok = false;
+  try { await navigator.clipboard.writeText(CONFIG.ca); ok = true; } catch (_) {
+    const t = document.createElement('textarea'); t.value = CONFIG.ca; t.style.position = 'fixed'; t.style.opacity = '0';
+    document.body.appendChild(t); t.select(); try { ok = document.execCommand('copy'); } catch (_) {} t.remove();
+  }
+  say(ok ? 'Contract address copied' : 'Copy failed. Select the address and copy it manually.');
+}
+
+/* ---------- Template downloads (plain download on GitHub; downloads capability inside Claude) ---------- */
+let dlApi = null;
+if (window.claude && typeof window.claude.use === 'function'){
+  window.claude.use('downloads').then(d => { dlApi = d; }).catch(() => {});
+}
+$$('[data-dl]').forEach(a => a.addEventListener('click', async e => {
+  if (!window.claude) return;
+  e.preventDefault();
+  if (!dlApi){ say('Downloads are off here. Right-click the image and save it.'); return; }
+  try {
+    const blob = await (await fetch(a.getAttribute('href'))).blob();
+    await dlApi.save({ filename: a.dataset.dl, data: blob });
+    say('Template saved');
+  } catch (err) {
+    if (err && err.code === 'declined') return;
+    say('Could not save. Right-click the image and save it.');
+  }
+}));
+
+/* =========================================================
+   Sky: real-time volumetric-style clouds (WebGL)
+   uAlt  0 → 1 as you scroll (dusk → stratosphere)
+   uRise how far the camera has climbed (moves cloud layers past you)
+   ========================================================= */
+const sky = { gl: null, u: {}, z: 0, fly: 0, alt: 0, introCam: 0 };
+const DECKS = [.8, 2.4, 4.1];
+// climb fast through each cloud deck so text never sits in the fog for long
+function camFor(x){ let c = x; DECKS.forEach(H => { c += .22 * Math.tanh((x - H) / .07) - .22 * Math.tanh((0 - H) / .07); }); return c; }
+(function initSky(){
+  const c = $('#sky');
+  const gl = c.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false, powerPreference: 'high-performance' });
+  if (!gl) return;
+  const vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  const fs = `precision highp float;
+uniform vec2 uRes;uniform float uTime,uAlt,uCam,uZ;
+float h1(vec2 p){p=fract(p*vec2(233.34,851.73));p+=dot(p,p+23.45);return fract(p.x*p.y);}
+float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(h1(i),h1(i+vec2(1.,0.)),f.x),mix(h1(i+vec2(0.,1.)),h1(i+vec2(1.,1.)),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;mat2 m=mat2(1.6,1.2,-1.2,1.6);for(int i=0;i<6;i++){v+=a*n2(p);p=m*p+vec2(3.1,1.7);a*=.5;}return v;}
+float deckH(int k){if(k==0)return .8;if(k==1)return 2.4;return 4.1;}
+void main(){
+  vec2 uv=gl_FragCoord.xy/uRes;
+  vec2 p=(gl_FragCoord.xy-.5*uRes)/uRes.y;
+  float a=uAlt;
+  float dy=p.y+.14;
+  vec3 hz=mix(vec3(.92,.42,.52),vec3(.62,.24,.46),smoothstep(.2,.6,a));
+  hz=mix(hz,vec3(.3,.12,.32),smoothstep(.6,.95,a));
+  vec3 zn=mix(vec3(.2,.04,.16),vec3(.08,.02,.12),smoothstep(.1,.6,a));
+  zn=mix(zn,vec3(.01,.004,.02),smoothstep(.6,1.,a));
+  vec3 ground=mix(vec3(.16,.03,.1),vec3(.1,.04,.14),a);
+  vec3 col=dy>0.?mix(hz,zn,smoothstep(0.,.85,pow(dy,.8))):mix(hz*.85,ground,smoothstep(0.,.3,-dy));
+  vec2 sunP=vec2(.34,-.14+.035);
+  vec2 sd2=(p-sunP)*vec2(1.,1.3);float sd=length(sd2);
+  float sunI=1.-.6*smoothstep(.6,1.,a);
+  vec3 sunC=vec3(1.,.72,.62);
+  col+=sunC*(.9*exp(-sd*16.)+.32*exp(-sd*3.2))*sunI;
+  col+=vec3(1.,.5,.7)*.16*exp(-abs(p.y-sunP.y)*90.)*exp(-abs(p.x-sunP.x)*1.4)*sunI;
+  float fog=0.;
+  for(int i=0;i<3;i++){
+    int k=dy>0.?2-i:i;
+    float H=deckH(k);
+    float hh=H-uCam;
+    fog=max(fog,1.-smoothstep(0.,.2,abs(hh)));
+    if(hh*dy<=0.)continue;
+    float t=hh/dy;
+    if(t>60.)continue;
+    vec2 w=vec2(p.x*t,t+uZ)+vec2(float(k)*13.7,uTime*.03);
+    vec2 q=w*.22;
+    float c=fbm(q);
+    float det=fbm(q*3.1+vec2(uTime*.02,0.));
+    float cov=hh<0.?.1:.04;
+    float den=smoothstep(.44,.66,c-det*.14+cov);
+    float fade=exp(-t*.035);
+    den*=fade*smoothstep(.0,.035,abs(dy));
+    vec2 toSun=normalize(vec2(sunP.x,1.))*.35;
+    float lit=clamp(.5+(c-fbm(q+toSun))*3.,0.,1.);
+    vec3 cc;
+    if(hh<0.){
+      vec3 dark=mix(vec3(.28,.09,.22),vec3(.16,.08,.24),a);
+      vec3 top=mix(vec3(1.,.72,.74),vec3(.86,.72,.98),smoothstep(.5,1.,a));
+      cc=mix(dark,top,lit);
+    }else{
+      vec3 under=mix(vec3(.16,.04,.13),vec3(.1,.04,.16),a);
+      vec3 glow=vec3(.95,.46,.55)*(.35+.65*exp(-abs(p.x-sunP.x)*1.5));
+      cc=mix(under,glow,pow(1.-c,1.4)*.9+lit*.2);
+    }
+    vec3 haze=dy>0.?hz:hz*.8;
+    cc=mix(haze,cc,fade);
+    col=mix(col,cc,den);
+  }
+  col=mix(col,mix(vec3(.95,.62,.72),vec3(.6,.5,.75),a),fog*.9);
+  float st=step(.9975,h1(floor(gl_FragCoord.xy*.9)))*smoothstep(.55,.9,a)*smoothstep(.05,.35,dy);
+  col+=st*(.6+.4*sin(uTime*1.7+h1(floor(gl_FragCoord.xy))*30.));
+  col=1.-exp(-col*1.25);
+  col*=1.-.45*dot(uv-.5,uv-.5)*1.6;
+  gl_FragColor=vec4(col,1.);
+}
+`;
+  const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(o)); return null; } return o; };
+  const v = sh(gl.VERTEX_SHADER, vs), f = sh(gl.FRAGMENT_SHADER, fs);
+  if (!v || !f) return;
+  const pr = gl.createProgram(); gl.attachShader(pr, v); gl.attachShader(pr, f); gl.linkProgram(pr);
+  if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return;
+  gl.useProgram(pr);
+  const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  ['uRes', 'uTime', 'uAlt', 'uCam', 'uZ'].forEach(k => sky.u[k] = gl.getUniformLocation(pr, k));
+  sky.gl = gl; sky.canvas = c;
+  sizeSky();
+})();
+function sizeSky(){
+  if (!sky.gl) return;
+  const s = innerWidth > 1600 ? .42 : innerWidth < 700 ? .6 : .5;
+  sky.canvas.width = Math.round(innerWidth * s); sky.canvas.height = Math.round(innerHeight * s);
+  sky.gl.viewport(0, 0, sky.canvas.width, sky.canvas.height);
+}
+let skyVisible = true;
+
+/* ---------- Altitude from scroll + render loop ---------- */
+const MAX_FT = 42000;
+let prog = 0, vel = 0, lastSY = 0, lastT = 0;
+const altNums = $$('[data-alt]'), altUnits = $$('[data-alt-unit]'), adis = $$('.adi i');
+const altTape = $('#altTape');
+function frame(t){
+  const dt = Math.min(.05, (t - lastT) / 1000 || .016); lastT = t;
+  const sy = scrollY, max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  const p = clamp(sy / max, 0, 1);
+  prog = lerp(prog, p, .08);
+  const dv = sy - lastSY; lastSY = sy; vel = lerp(vel, dv, .12);
+  const ft = Math.round(prog * MAX_FT / 10) * 10;
+  const top = prog > .985;
+  altNums.forEach(e => e.textContent = top ? 'CRUISE' : ft.toLocaleString('en-US'));
+  altUnits.forEach(e => e.textContent = top ? '' : 'ft');
+  if (altTape) altTape.style.setProperty('--ro', (sy * .3 % 50) + 'px');
+  const roll = clamp(vel * .35, -18, 18), pitch = clamp(-vel * .12, -8, 8);
+  adis.forEach(i => { i.style.setProperty('--roll', roll + 'deg'); i.style.setProperty('--pitch', pitch + 'px'); });
+  if (sky.gl && skyVisible){
+    sky.z += (sky.fly * 7 + .12 + Math.abs(vel) * .004) * dt;
+    const gl = sky.gl;
+    gl.uniform2f(sky.u.uRes, sky.canvas.width, sky.canvas.height);
+    gl.uniform1f(sky.u.uTime, reduce ? 0 : t / 1000);
+    gl.uniform1f(sky.u.uAlt, clamp(prog + sky.introCam * .12, 0, 1));
+    gl.uniform1f(sky.u.uCam, sky.introCam + camFor(prog * 5.2));
+    gl.uniform1f(sky.u.uZ, sky.z);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---------- Chrome serif title with depth ---------- */
+const title = $('#title');
+(function build3D(){
+  const txt = title.textContent.trim(); title.textContent = '';
+  const inner = document.createElement('span'); inner.className = 't3d__in'; inner.setAttribute('aria-hidden', 'true');
+  const LAYERS = 14;
+  [...txt].forEach(ch => {
+    const l = document.createElement('span'); l.className = 't3d__l';
+    for (let i = LAYERS; i >= 1; i--){
+      const k = document.createElement('span'); k.className = 't3d__k'; k.textContent = ch;
+      const tt = i / LAYERS;
+      k.style.cssText = `--i:${i};--k:rgb(${Math.round(lerp(150, 26, tt))},${Math.round(lerp(60, 6, tt))},${Math.round(lerp(96, 20, tt))})`;
+      l.appendChild(k);
+    }
+    const f = document.createElement('span'); f.className = 't3d__f'; f.textContent = ch; l.appendChild(f);
+    inner.appendChild(l);
+  });
+  title.appendChild(inner);
+})();
+const tIn = $('.t3d__in', title), tLetters = $$('.t3d__l', title);
+if (hasGSAP && !reduce){
+  gsap.set(tIn, { '--rx': '6deg', '--ry': '14deg' });
+  const rx = gsap.quickTo(tIn, '--rx', { duration: 1.2, ease: 'power3.out' });
+  const ry = gsap.quickTo(tIn, '--ry', { duration: 1.2, ease: 'power3.out' });
+  const px = gsap.quickTo('#plate', 'x', { duration: 1.6, ease: 'power3.out' });
+  const py = gsap.quickTo('#plate', 'y', { duration: 1.6, ease: 'power3.out' });
+  const fx = gsap.quickTo('#flare', '--fx', { duration: 1.4, ease: 'power3.out' });
+  addEventListener('pointermove', e => {
+    if (scrollY > innerHeight) return;
+    const nx = e.clientX / innerWidth - .5, ny = e.clientY / innerHeight - .5;
+    rx(`${6 - ny * 14}deg`); ry(`${14 + nx * 26}deg`);
+    px(-nx * 20); py(-ny * 14); fx(`${66 + nx * 18}%`);
+  }, { passive: true });
+  if (coarse) gsap.to(tIn, { '--ry': '-6deg', duration: 4, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+  gsap.to(title, { '--shine': '300%', duration: 2.8, ease: 'power2.inOut', repeat: -1, repeatDelay: 3.2, delay: 5 });
+}
+
+/* ---------- Order headline split into words ---------- */
+const orderLine = $('#orderLine');
+orderLine.innerHTML = orderLine.textContent.split(' ').map(w => `<span class="w">${w} </span>`).join('');
+
+/* ---------- Smooth scroll ---------- */
+let lenis = null;
+if (window.Lenis && !reduce){
+  lenis = new Lenis({ lerp: .075, smoothWheel: true });
+  lenis.stop();
+  if (hasGSAP){ lenis.on('scroll', ScrollTrigger.update); gsap.ticker.add(t => lenis.raf(t * 1000)); gsap.ticker.lagSmoothing(0); }
+  else { const raf = t => { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+}
+const toTop = e => { e.preventDefault(); lenis ? lenis.scrollTo(0, { duration: 3 }) : scrollTo({ top: 0, behavior: 'smooth' }); };
+$('#toTop').addEventListener('click', toTop);
+$('.brand').addEventListener('click', toTop);
+let lastBarY = 0;
+addEventListener('scroll', () => { const y = scrollY; $('#bar').classList.toggle('is-hidden', y > lastBarY && y > innerHeight * .6); lastBarY = y; }, { passive: true });
+
+/* ---------- Scroll choreography ---------- */
+function buildScroll(){
+  const cards = $$('[data-card]');
+  if (!hasGSAP || reduce){
+    $$('.plate__fig').forEach(f => f.style.clipPath = 'none');
+    const cs = $('#cards'); cs.style.height = 'auto'; cs.style.padding = '14vh 0';
+    cards.forEach(c => { c.style.position = 'relative'; c.style.opacity = 1; c.style.padding = '6vh var(--pad)'; });
+    $('#cardsCount').remove(); $('.cards__bars').remove();
+    return;
+  }
+  // Hero: slow dolly out, the plate falls away beneath the camera
+  gsap.timeline({ scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: .8 } })
+    .to('#plate img', { scale: 1.18, yPercent: 14, ease: 'none' }, 0)
+    .to('.hero__txt', { y: -80, opacity: 0, ease: 'none' }, 0)
+    .to('.hero__hud', { opacity: 0, ease: 'none' }, 0);
+
+  // Title cards: one line at a time, like a trailer
+  const ct = gsap.timeline({ scrollTrigger: { trigger: '#cards', start: 'top top', end: '+=' + (cards.length * 90) + '%', pin: true, scrub: .6,
+    onUpdate: s => { $('#cardsCount').textContent = `${Math.min(cards.length, Math.floor(s.progress * cards.length) + 1)} / ${cards.length}`; } } });
+  cards.forEach((c, i) => {
+    const at = i * 1;
+    ct.fromTo(c, { opacity: 0, letterSpacing: '.06em', filter: 'blur(14px)', scale: 1.04 }, { opacity: 1, letterSpacing: '0em', filter: 'blur(0px)', scale: 1, duration: .4 }, at);
+    if (i < cards.length - 1) ct.to(c, { opacity: 0, filter: 'blur(12px)', scale: .97, duration: .35 }, at + .7);
+  });
+  ct.to({}, { duration: .3 });
+
+  // Flight log: each frame opens like a camera — iris, scope or shutter
+  const FROM = { iris: 'circle(12% at 50% 50%)', scope: 'inset(46% 0% 46% 0%)', shutter: 'inset(0% 50% 0% 50%)' };
+  const TO = { iris: 'circle(75% at 50% 50%)', scope: 'inset(0% 0% 0% 0%)', shutter: 'inset(0% 0% 0% 0%)' };
+  $$('.plate').forEach(pl => {
+    const fig = $('.plate__fig', pl), img = $('img', fig), sh = pl.dataset.shape;
+    gsap.fromTo(fig, { clipPath: FROM[sh] }, { clipPath: TO[sh], ease: 'power2.inOut', scrollTrigger: { trigger: pl, start: 'top 88%', end: 'center 55%', scrub: .7 } });
+    gsap.fromTo(img, { scale: 1.3 }, { scale: 1.04, ease: 'none', scrollTrigger: { trigger: pl, start: 'top 90%', end: 'center 50%', scrub: true } });
+    gsap.fromTo($('.plate__ghost', pl), { yPercent: -20 }, { yPercent: -80, ease: 'none', scrollTrigger: { trigger: pl, start: 'top bottom', end: 'bottom top', scrub: true } });
+    gsap.fromTo($('.plate__txt', pl).children, { y: 40, opacity: 0 }, { y: 0, opacity: 1, stagger: .08, ease: 'none', scrollTrigger: { trigger: pl, start: 'top 75%', end: 'top 40%', scrub: .6 } });
+  });
+
+  // The order
+  gsap.timeline({ scrollTrigger: { trigger: '#order', start: 'top top', end: '+=200%', pin: true, scrub: .6,
+      onToggle: s => { skyVisible = !s.isActive; } } })
+    .fromTo('#orderImg', { scale: 1.25 }, { scale: 1, ease: 'none', duration: 1 }, 0)
+    .to('#orderGlow', { opacity: 1, duration: .3 }, .1)
+    .fromTo('#orderLine .w', { opacity: 0, y: 50, rotateX: -80 }, { opacity: 1, y: 0, rotateX: 0, stagger: .04, duration: .2 }, .2)
+    .fromTo('#orderSub', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .15 }, .62)
+    .fromTo('#orderActs', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .15 }, .72);
+
+  gsap.fromTo('.tcard:nth-child(1)', { y: 80 }, { y: -20, ease: 'none', scrollTrigger: { trigger: '#template', start: 'top bottom', end: 'bottom top', scrub: true } });
+  gsap.fromTo('.tcard:nth-child(2)', { y: 160 }, { y: -60, ease: 'none', scrollTrigger: { trigger: '#template', start: 'top bottom', end: 'bottom top', scrub: true } });
+
+  gsap.fromTo('#finBanner', { clipPath: 'inset(48% 0% 48% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'power2.inOut',
+    scrollTrigger: { trigger: '#fin', start: 'top 85%', end: 'top 25%', scrub: .6 } });
+}
+
+/* ---------- Intro: timecode, clouds rush past, title card, rack focus to the plate ---------- */
+const gate = $('#gate');
+let entered = false, introTl = null, tcT = 0, tcRun = true;
+(function timecode(){
+  if (!tcRun) return;
+  tcT += 1 / 60;
+  const f = Math.floor(tcT * 24) % 24, s = Math.floor(tcT) % 60;
+  $('#tc').textContent = `00:00:${String(s).padStart(2, '0')}:${String(f).padStart(2, '0')}`;
+  requestAnimationFrame(timecode);
+})();
+function heroIn(fast){
+  if (!hasGSAP || reduce){ gsap && gsap.set && gsap.set('#hero', { opacity: 1 }); return; }
+  gsap.timeline()
+    .fromTo('#hero', { opacity: 0 }, { opacity: 1, duration: fast ? .6 : 1.4, ease: 'power2.out' }, 0)
+    .fromTo('#plate img', { scale: 1.22, filter: 'blur(22px) brightness(1.4)' }, { scale: 1, filter: 'blur(0px) brightness(1)', duration: 2.6, ease: 'power3.out' }, 0)
+    .fromTo('#flare', { opacity: 0 }, { opacity: 1, duration: 1.2 }, .6)
+    .fromTo('.flare__streak', { scaleX: .1 }, { scaleX: 1, duration: 1.8, ease: 'expo.out' }, .6)
+    .fromTo(tLetters, { opacity: 0, filter: 'blur(18px)', x: (i) => (i - 1.5) * 90 }, { opacity: 1, filter: 'blur(0px)', x: 0, duration: 2, stagger: .08, ease: 'expo.out' }, .8)
+    .fromTo('.hero__tag, .hero__row', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1.2, stagger: .1, ease: 'expo.out' }, 1.4)
+    .fromTo('.hero__hud, #bar, .alt, .alt-m', { opacity: 0 }, { opacity: 1, duration: 1 }, 1.6);
+}
+function enter(fast){
+  if (entered) return; entered = true;
+  if (introTl) introTl.kill();
+  document.body.classList.remove('is-locked'); scrollTo(0, 0);
+  const done = () => { tcRun = false; gate.remove(); sky.fly = 0; sky.introCam = 0; if (lenis) lenis.start(); if (hasGSAP) ScrollTrigger.refresh(); };
+  if (!hasGSAP || reduce){ done(); $('#hero').style.opacity = 1; return; }
+  gate.classList.add('is-gone');
+  heroIn(fast);
+  gsap.timeline({ onComplete: done })
+    .to(sky, { fly: 0, duration: 1.6, ease: 'power2.out' }, 0)
+    .to(sky, { introCam: 0, duration: fast ? .9 : 1.5, ease: 'power2.inOut', overwrite: true }, 0)
+    .to('.gate__card, #gateHud, #ladder, #skip, #gateBlack', { opacity: 0, duration: .5 }, 0)
+    .to('#barT', { yPercent: -100, duration: 1.2, ease: 'power3.inOut' }, .2)
+    .to('#barB', { yPercent: 100, duration: 1.2, ease: 'power3.inOut' }, .2);
+}
+function intro(){
+  if (!hasGSAP || reduce){ setTimeout(() => enter(true), 300); return; }
+  gsap.set('#hero', { opacity: 0 });
+  sky.fly = 1.3; sky.introCam = 2.9;
+  gsap.to(sky, { introCam: 1.9, duration: 3.6, ease: 'sine.inOut' });
+  introTl = gsap.timeline()
+    .to('#gateHud', { opacity: 1, duration: .6 }, .3)
+    .to('#gateBlack', { opacity: 0, duration: 2, ease: 'power2.inOut' }, .5)
+    .fromTo('#ladder', { opacity: 0, rotate: -6 }, { opacity: .8, rotate: 3, duration: 3, ease: 'sine.inOut' }, .8)
+    .fromTo('#gateQ', { opacity: 0, letterSpacing: '.18em', filter: 'blur(12px)' }, { opacity: 1, letterSpacing: '0em', filter: 'blur(0px)', duration: 1.6, ease: 'power3.out' }, 1.5)
+    .fromTo('#gateMeta', { opacity: 0 }, { opacity: 1, duration: .8 }, 2.4)
+    .to(sky, { fly: .45, duration: 1.8, ease: 'power2.inOut' }, 2.6)
+    .to('#gateQ, #gateMeta, #ladder', { opacity: 0, filter: 'blur(10px)', duration: .8 }, 4.2)
+    .call(() => enter(false), null, 4.8);
+}
+$('#skip').addEventListener('click', () => enter(true));
+addEventListener('keydown', e => { if (!entered && (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape')){ e.preventDefault(); enter(true); } });
+
+/* ---------- Boot ---------- */
+if (hasGSAP && !reduce) gsap.set('#bar, .alt, .alt-m, .hero__hud', { opacity: 0 });
+buildScroll();
+requestAnimationFrame(frame);
+intro();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => hasGSAP && ScrollTrigger.refresh());
+addEventListener('load', () => hasGSAP && ScrollTrigger.refresh());
+let rT; addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(sizeSky, 150); });
+</script>
+</body>
+</html>
